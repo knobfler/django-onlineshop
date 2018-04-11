@@ -11,10 +11,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
+import pymysql
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -26,7 +25,6 @@ SECRET_KEY = '9w%au8c&c3g6nu0t%h%3i4w-##9(4e-e8yqx!er++e*wi)5!tr'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -40,6 +38,15 @@ INSTALLED_APPS = [
     'shop',
     'cart',
     'orders',
+    'coupons',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.naver',
+    'allauth.socialaccount.providers.kakao',
+    'storages',
+
 ]
 
 MIDDLEWARE = [
@@ -73,9 +80,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+
+pymysql.install_as_MySQLdb()
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'db name',  # DB명
+        'USER': 'user name',  # 데이터베이스 계정
+        'PASSWORD': 'user pwd',  # 계정 비밀번호
+        'HOST': 'host ip',  # 데이테베이스 주소(IP)
+        'PORT': '3306',  # 데이터베이스 포트(보통은 33
+    }
+}
 
 DATABASES = {
     'default': {
@@ -83,7 +101,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -103,6 +120,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -117,16 +138,41 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-                os.path.join(BASE_DIR,'static')
-]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+AWS_ACCESS_KEY_ID='aws access key id'
+AWS_SECRET_ACCESS_KEY='aws secret access key'
+AWS_REGION='region name'
+AWS_STORAGE_BUCKET_NAME ='bucket name'
+AWS_S3_CUSTOM_DOMAIN ='%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME,AWS_REGION)
+AWS_S3_OBJECT_PARAMETERS={
+'CacheControl':'max-age=86400',
+}
+AWS_LOCATION = 'static'
+
+
+
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+DEFAULT_FILE_STORAGE = 'mysite.asset_storage.MediaStorage'
+
+
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CART_SESSION_ID = 'cart_id'
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
+
+IAMPORT_KEY = 'IAMPORT_KEY'
+IAMPORT_SECRET = 'IAMPORT_SECRET'
+

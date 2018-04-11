@@ -42,7 +42,7 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['-created']
-        # index_together - > 데이터베이스에서 꺼내온 이후에 인덱스 값 측정
+        # indextogether - > 데이터베이스에서 꺼내온 이후에 인덱스 값 측정
         index_together = (('id', 'slug'), )
 
     def __str__(self):

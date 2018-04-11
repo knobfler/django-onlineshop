@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
 from cart.forms import CartAddProductForm
+from coupons.forms import CouponApplyForm
 from shop.models import Product
 from .cart import Cart
 
@@ -24,7 +25,8 @@ def cart_detail(request):
     cart = Cart(request)
     for item in cart:
         item['update_quantity_form'] = CartAddProductForm(initial={'quantity': item['quantity'], 'update': False})
-    return render(request, 'cart/detail.html', {'cart': cart,})
+    coupon_form = CouponApplyForm()
+    return render(request, 'cart/detail.html', {'cart': cart, 'coupon_form': coupon_form})
 
 def cart_remove(request, product_id):
     cart = Cart(request)
